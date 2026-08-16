@@ -1,14 +1,22 @@
 export type DependencyType = "dependencies" | "devDependencies" | "peerDependencies" | "optionalDependencies";
 
 export interface PackageRecord {
-    name: string;
-    version: string;
-    path: string; // The physical path in node_modules, e.g., "node_modules/a/node_modules/b"
-    isDev: boolean;
-    // Map of packageName -> semver constraint (e.g. "^4.0.0")
-    dependencies: Record<string, string>;
-    peerDependencies: Record<string, string>;
-    ecosystem: string;
+
+    name:string;
+    version:string;
+    path:string;
+
+    isDev:boolean;
+
+    dependencies: Record<string,string>;
+
+    devDependencies: Record<string,string>;
+
+    peerDependencies: Record<string,string>;
+
+    optionalDependencies: Record<string,string>;
+
+    ecosystem:string;
 }
 
 export interface DependencyEdge {
@@ -32,14 +40,16 @@ export interface Vulnerability {
 }
 
 export interface PackageNode {
-    id: string; // e.g., "lodash@4.17.21"
+    id: string;
     name: string;
     version: string;
     ecosystem: "npm" | "pip" | "cargo";
-    // Keyed by package name
+
+    // Keyed by targetId (example: lodash@4.17.21)
     dependencies: Map<string, DependencyEdge>;
-    // Dependents holds node IDs that depend on this node
+
     dependents: Set<string>;
+
     metadata: {
         license?: string;
         vulnerabilities?: Vulnerability[];

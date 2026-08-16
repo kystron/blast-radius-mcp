@@ -1,74 +1,119 @@
-import * as fs from 'fs';
-import { PackageRecord } from '../graph/types.js';
+import fs from "fs";
+import { PackageRecord } from "../graph/types.js";
 
-export function parseNpmLockfile(filePath: string): PackageRecord[] {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const lockfile = JSON.parse(content);
-    
-    const records: PackageRecord[] = [];
-    const rootName = lockfile.name || 'root-project';
-    
-    // Check if v3 format (has 'packages' object)
-    if (lockfile.packages) {
-        for (const [path, pkgInfo] of Object.entries<any>(lockfile.packages)) {
-            // Root project
-            if (path === "") {
-                const dependencies = { ...pkgInfo.dependencies, ...pkgInfo.devDependencies };
-                records.push({
-                    name: rootName,
-                    version: pkgInfo.version || '0.0.0',
-                    path: "",
-                    isDev: false,
-                    dependencies: pkgInfo.dependencies || {},
-                    peerDependencies: pkgInfo.peerDependencies || {},
-                    ecosystem: 'npm'
-                });
-                continue;
-            }
-            
-            // node_modules packages
-            const parts = path.split('node_modules/');
-            const name = parts[parts.length - 1]; // e.g., "express"
-            
-            if (!name) continue;
-            
-            records.push({
-                name,
-                version: pkgInfo.version || 'unknown',
-                path: path,
-                isDev: !!pkgInfo.dev,
-                dependencies: pkgInfo.dependencies || {},
-                peerDependencies: pkgInfo.peerDependencies || {},
-                ecosystem: 'npm'
-            });
-        }
-    } else if (lockfile.dependencies) {
-        // Fallback for v1 lockfiles (legacy)
-        console.warn("Legacy package-lock.json v1 detected. Precision may be lower.");
-        
-        function walkDependencies(deps: any) {
-            for (const [name, info] of Object.entries<any>(deps)) {
-                // v1 lockfiles store "requires" mapping instead of constraints in dependencies
-                const requiredDeps = info.requires || {};
-                const namePath = "node_modules/" + name;
-                records.push({
-                    name,
-                    version: info.version,
-                    path: namePath,
-                    isDev: !!info.dev,
-                    dependencies: requiredDeps,
-                    peerDependencies: {}, // v1 doesn't track peer constraints well
-                    ecosystem: 'npm'
-                });
-                
-                if (info.dependencies) {
-                    walkDependencies(info.dependencies);
-                }
-            }
-        }
-        
-        walkDependencies(lockfile.dependencies);
+
+function extractPackageName(packagePath: string): string {
+
+    const marker = "node_modules/";
+
+    const index = packagePath.lastIndexOf(marker);
+
+    if (index === -1) {
+        return "";
     }
-    
+
+
+    const name = packagePath.substring(index + marker.length);
+
+
+    // Scoped package
+    // node_modules/@scope/package
+
+    if (name.startsWith("@")) {
+
+        const parts = name.split("/");
+
+        if (parts.length >= 2) {
+            return `${parts[0]}/${parts[1]}`;
+        }
+
+    }
+
+
+    // Normal package
+
+    return name.split("/")[0];
+}
+
+
+
+export function parseNpmLock(lockfilePath: string): PackageRecord[] {
+
+    const raw = fs.readFileSync(lockfilePath, "utf-8");
+
+    const lock = JSON.parse(raw);
+
+
+    if (!lock.packages) {
+
+        throw new Error(
+            "Only npm lockfile v2/v3 packages format is supported"
+        );
+
+    }
+
+
+    const records: PackageRecord[] = [];
+
+
+    for (const [packagePath, packageInfo] of Object.entries(lock.packages)) {
+
+
+        const pkg: any = packageInfo;
+
+
+        // Skip root package
+
+        if (packagePath === "") {
+            continue;
+        }
+
+
+        if (!pkg.version) {
+            continue;
+        }
+
+
+        const name = extractPackageName(packagePath);
+
+
+        if (!name) {
+            continue;
+        }
+
+
+
+        records.push({
+
+            name,
+
+            version: pkg.version,
+
+            path: packagePath,
+
+            dependencies:
+                pkg.dependencies || {},
+
+            devDependencies:
+                pkg.devDependencies || {},
+
+            peerDependencies:
+                pkg.peerDependencies || {},
+
+            optionalDependencies:
+                pkg.optionalDependencies || {},
+
+            ecosystem: "npm",
+
+            isDev:
+                pkg.dev === true
+
+        });
+
+
+    }
+
+
     return records;
+
 }
