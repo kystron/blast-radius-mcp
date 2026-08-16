@@ -17,7 +17,9 @@ export function parseNpmLockfile(filePath: string): PackageRecord[] {
                 records.push({
                     name: rootName,
                     version: pkgInfo.version || '0.0.0',
-                    dependencies: dependencies,
+                    path: "",
+                    isDev: false,
+                    dependencies: pkgInfo.dependencies || {},
                     peerDependencies: pkgInfo.peerDependencies || {},
                     ecosystem: 'npm'
                 });
@@ -33,6 +35,8 @@ export function parseNpmLockfile(filePath: string): PackageRecord[] {
             records.push({
                 name,
                 version: pkgInfo.version || 'unknown',
+                path: path,
+                isDev: !!pkgInfo.dev,
                 dependencies: pkgInfo.dependencies || {},
                 peerDependencies: pkgInfo.peerDependencies || {},
                 ecosystem: 'npm'
@@ -46,9 +50,12 @@ export function parseNpmLockfile(filePath: string): PackageRecord[] {
             for (const [name, info] of Object.entries<any>(deps)) {
                 // v1 lockfiles store "requires" mapping instead of constraints in dependencies
                 const requiredDeps = info.requires || {};
+                const namePath = "node_modules/" + name;
                 records.push({
                     name,
                     version: info.version,
+                    path: namePath,
+                    isDev: !!info.dev,
                     dependencies: requiredDeps,
                     peerDependencies: {}, // v1 doesn't track peer constraints well
                     ecosystem: 'npm'

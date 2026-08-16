@@ -72,7 +72,8 @@ export function runUpgradeAnalysis(packageName: string, targetVersion: string, l
                 let status = "WARNING";
                 let reason = "Transitive dependency requires validation";
                 
-                const edge = graph.getDependencyEdge(id, packageName);
+                const edges = graph.getDependencies(id);
+                const edge = edges.find(e => e.packageName === packageName);
                 
                 if (edge) {
                     // Direct dependent! Evaluate semver

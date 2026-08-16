@@ -6,6 +6,7 @@ export interface AttackPath {
     vulnerable: string;
     depth: number;
     path: string[];
+    isDevPath: boolean;
 }
 
 export interface VulnerableNode {
@@ -63,39 +64,46 @@ export function runSecurityAudit(graph: DependencyGraph): SecurityAuditResult {
         // Calculate Attack Paths via Reverse BFS
         const attackPaths: AttackPath[] = [];
         const visited = new Set<string>();
-        const queue: { id: string, depth: number, path: string[] }[] = [];
+        const queue: { id: string, depth: number, path: string[], isDevPath: boolean }[] = [];
         
-        queue.push({ id: node.id, depth: 0, path: [node.name] });
+        queue.push({ id: node.id, depth: 0, path: [node.name], isDevPath: false });
         visited.add(node.id);
 
-        let minDepth = 999;
+        let minProdDepth = 999;
+        let minDevDepth = 999;
 
         while (queue.length > 0) {
-            const { id, depth, path } = queue.shift()!;
+            const { id, depth, path, isDevPath } = queue.shift()!;
             
             const dependents = graph.getDependents(id);
             
-            // If it has no dependents, it's a top-level entry point (like our own app)
             if (dependents.length === 0 && depth > 0) {
                 attackPaths.push({
                     entry: path[path.length - 1],
                     vulnerable: node.name,
                     depth,
-                    path: [...path].reverse() // Reverse so it reads Entry -> Dep -> Vuln
+                    path: [...path].reverse(),
+                    isDevPath
                 });
                 
-                if (depth < minDepth) minDepth = depth;
+                if (isDevPath) {
+                    if (depth < minDevDepth) minDevDepth = depth;
+                } else {
+                    if (depth < minProdDepth) minProdDepth = depth;
+                }
             }
 
             for (const depId of dependents) {
                 if (!visited.has(depId)) {
                     visited.add(depId);
                     const depNode = graph.getNode(depId);
-                    if (depNode) {
+                    const edge = graph.getDependencyEdge(depId, id);
+                    if (depNode && edge) {
                         queue.push({ 
                             id: depId, 
                             depth: depth + 1, 
-                            path: [...path, depNode.name] 
+                            path: [...path, depNode.name],
+                            isDevPath: isDevPath || !!edge.isDev
                         });
                     }
                 }
@@ -103,10 +111,24 @@ export function runSecurityAudit(graph: DependencyGraph): SecurityAuditResult {
         }
 
         // Calculate Risk Score
-        // Base severity score reduced by depth. If minDepth is 999 (no entry points found), 
-        // it means it's an isolated node (maybe root itself).
-        const depthPenalty = minDepth === 999 ? 1 : (minDepth + 1);
-        const riskScore = Math.round(getSeverityScore(topVuln.severity) / depthPenalty);
+        // Priority to prod paths. If no prod paths exist, fallback to dev paths.
+        let effectiveDepth = 0;
+        let reachability = 1.0;
+        
+        if (minProdDepth !== 999) {
+            effectiveDepth = minProdDepth;
+            reachability = 1.0;
+        } else if (minDevDepth !== 999) {
+            effectiveDepth = minDevDepth;
+            reachability = 0.3;
+        } else {
+            // Root node itself is vulnerable
+            effectiveDepth = 0;
+            reachability = 1.0;
+        }
+
+        const depthFactor = 1 / Math.log2(effectiveDepth + 2);
+        const riskScore = Math.round(getSeverityScore(topVuln.severity) * reachability * depthFactor);
 
         result.vulnerabilities.push({
             id: topVuln.id,

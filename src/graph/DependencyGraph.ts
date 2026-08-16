@@ -13,16 +13,18 @@ export class DependencyGraph {
         }
     }
 
-    public addEdge(fromId: string, toId: string, packageName: string, constraint: string, isPeer?: boolean): void {
+    public addEdge(fromId: string, toId: string, packageName: string, constraint: string, dependencyType: import('./types.js').DependencyType, isPeer?: boolean, isDev?: boolean): void {
         const fromNode = this.nodes.get(fromId);
         const toNode = this.nodes.get(toId);
 
         if (fromNode && toNode) {
-            fromNode.dependencies.set(packageName, {
+            fromNode.dependencies.set(toId, { // Key is now targetId
                 targetId: toId,
                 packageName,
                 constraint,
-                isPeer
+                isPeer,
+                isDev,
+                dependencyType
             });
             toNode.dependents.add(fromId);
         }
@@ -42,9 +44,9 @@ export class DependencyGraph {
         return node ? Array.from(node.dependencies.values()) : [];
     }
 
-    public getDependencyEdge(fromId: string, targetPackageName: string): DependencyEdge | undefined {
+    public getDependencyEdge(fromId: string, targetId: string): DependencyEdge | undefined {
         const fromNode = this.nodes.get(fromId);
-        return fromNode ? fromNode.dependencies.get(targetPackageName) : undefined;
+        return fromNode ? fromNode.dependencies.get(targetId) : undefined;
     }
 
     public findPackages(name: string): PackageNode[] {
