@@ -3,9 +3,17 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "type": "module",
+  "bin": {
+    "blast-radius-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "ui/dist"
+  ],
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "tsc && cd ui && npm install && npx vite build",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
