@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+osv-debug.json
+osv-batch-debug.json
+test-upgrade.js
+test-audit.js
+debug-osv.js
+debug-batch.js
+ui/node_modules/
+ui/dist/
+ui/.env
