@@ -2,9 +2,20 @@
 
 **Understand dependency risk before you change your code.**
 
-Blast Radius MCP is an open-source dependency analysis and security visualization tool built with TypeScript and the Model Context Protocol (MCP). It helps developers and AI assistants understand dependency relationships, evaluate package upgrade compatibility, investigate known vulnerabilities, and explore dependency graphs through a 3D dashboard.
+Blast Radius MCP is an open-source dependency analysis and security visualization tool built with TypeScript and the Model Context Protocol (MCP). It helps developers and AI assistants analyze dependency relationships, evaluate package upgrade compatibility, investigate known vulnerabilities, and explore dependency graphs through a 3D dashboard.
 
-Instead of treating dependencies as a flat list, Blast Radius models them as a graph that can be analyzed to understand the potential impact of changes and security issues.
+Instead of treating dependencies as a flat list, Blast Radius models them as a graph to help developers understand the potential impact of changes and security issues.
+
+## Author & Attribution
+
+**Created and maintained by TSP LEGEND.**
+
+- **Author:** TSP LEGEND
+- **GitHub:** [@kystron](https://github.com/kystron)
+- **Repository:** [Blast Radius MCP](https://github.com/kystron/blast-radius-mcp)
+- **License:** MIT
+
+Please preserve the applicable copyright and license notices when redistributing this project, as required by the MIT License.
 
 ## Why Blast Radius?
 
@@ -14,11 +25,11 @@ Questions that matter include:
 
 - Which packages depend on a particular library?
 - What could break if a dependency is upgraded?
-- Which installed packages have known security vulnerabilities?
+- Which installed packages have known vulnerabilities?
 - How are vulnerable packages connected to other dependencies?
-- Can an AI assistant help investigate these questions using structured dependency data?
+- Can AI assistants help investigate these questions using structured dependency data?
 
-Blast Radius aims to make dependency analysis more actionable by combining graph-based analysis, vulnerability intelligence, MCP tools, and interactive visualization.
+Blast Radius combines graph-based analysis, vulnerability intelligence, MCP tools, and interactive visualization to make dependency analysis more actionable.
 
 ## Features
 
@@ -27,119 +38,117 @@ Blast Radius aims to make dependency analysis more actionable by combining graph
 Explore dependency relationships to understand the potential impact of package changes.
 
 - Analyze dependency and dependent relationships.
-- Identify direct and transitive dependencies represented in the graph.
-- Investigate how packages are connected.
-- Help AI assistants reason about the potential impact of dependency changes.
+- Investigate direct and transitive dependencies represented in the graph.
+- Understand how packages are connected.
+- Help AI assistants reason about potential dependency changes.
 
 ### 2. Dependency Upgrade Analysis
 
 Evaluate the potential impact of upgrading an installed npm package.
-
-The upgrade analyzer uses semantic versioning and dependency constraints to identify compatibility concerns.
 
 Capabilities include:
 
 - Validate requested target versions.
 - Identify installed package versions.
 - Examine dependency and peer-dependency constraints.
-- Flag potential breaking compatibility.
+- Flag potential compatibility problems.
 - Identify indirect dependents affected by an upgrade.
-- Handle malformed lockfiles and missing packages with validation errors.
+- Handle malformed lockfiles and missing packages through validation.
 
 **Example question:**
 
-> Can I upgrade `zod` to version 4 without breaking my dependency tree?
+> Can I upgrade Zod to version 4 without breaking my dependency tree?
 
-The analyzer can help identify packages whose declared version constraints may conflict with the proposed version.
+The analyzer helps identify packages whose declared version constraints may conflict with the proposed version.
 
-**Important:** Compatibility analysis is not a guarantee that an upgrade will succeed. Runtime behavior, APIs, build configuration, and application-level tests must also be considered.
+**Note:** Dependency compatibility analysis cannot guarantee that an upgrade will work at runtime. Application tests and build validation are still necessary.
 
 ### 3. Vulnerability Analysis with OSV
 
-Blast Radius integrates with the [Open Source Vulnerabilities (OSV) database](https://osv.dev/) to investigate known vulnerabilities in supported dependency data.
+Blast Radius integrates with the [Open Source Vulnerabilities database](https://osv.dev/) to investigate known vulnerabilities in supported dependency data.
 
-The security analysis includes:
+Capabilities include:
 
 - Batch vulnerability queries.
 - Deduplication of package-version queries.
 - Vulnerability detail retrieval.
-- Severity classification when supported by the available advisory data.
+- Severity classification when advisory data supports it.
 - Local caching to reduce repeated requests.
 - Dependency-graph analysis to help investigate vulnerability reachability.
 
-Vulnerability information depends on the data returned by OSV. An empty result does not prove that a package or application is completely secure.
+Vulnerability results depend on the available advisory data and successful queries. An empty result does not prove that an application is completely secure.
 
 ### 4. Interactive 3D Dependency Visualization
 
 Explore dependency relationships through a browser-based 3D dashboard.
 
-The project combines an Express server with a React-based visualization built using Vite and a 3D force-graph library.
+The project combines an Express server with a React frontend built using Vite and a 3D force-graph library.
 
-The visualization is intended to make dependency relationships and security findings easier to explore than a flat package list.
+The visualization is designed to make dependency relationships and security findings easier to explore.
 
 ### 5. Model Context Protocol Integration
 
 Blast Radius exposes dependency-analysis functionality through MCP tools so compatible AI clients can interact with the project.
 
-The existing tool names include:
+The current tool names include:
 
 - `dependency_blast_radius`
 - `dependency_upgrade_analysis`
 - `security_audit_graph`
 - `open_dependency_visualizer`
 
-The available behavior depends on the current implementation and the dependency data being analyzed.
+The behavior available through each tool depends on the current implementation and the dependency data being analyzed.
 
 ## Architecture
 
 ```text
-                  AI Assistant
-                       |
-                       | Model Context Protocol
-                       v
-                Blast Radius MCP
-                       |
-          +------------+------------+
-          |                         |
-          v                         v
-   Dependency Analysis       Security Analysis
-          |                         |
-          v                         v
-    Dependency Graph          OSV Integration
-          |                         |
-          +------------+------------+
-                       |
-                       v
-                 Express API
-                       |
-                       v
-              React 3D Dashboard
-                 localhost:3000
+                    AI Assistant
+                         |
+                         | MCP
+                         v
+                  Blast Radius MCP
+                         |
+              +----------+----------+
+              |                     |
+              v                     v
+       Dependency Analysis   Security Analysis
+              |                     |
+              v                     v
+       Dependency Graph        OSV Integration
+              |                     |
+              +----------+----------+
+                         |
+                         v
+                    Express API
+                         |
+                         v
+                React 3D Dashboard
+                  localhost:3000
 ```
 
-### Technology Stack
+## Technology Stack
 
 | Component | Technology |
 |---|---|
 | Language | TypeScript |
 | AI integration | Model Context Protocol SDK |
 | API server | Express |
-| Dependency compatibility | SemVer |
+| Version compatibility | SemVer |
 | Vulnerability intelligence | OSV API |
 | Frontend | React |
-| Frontend build tool | Vite |
+| Frontend build | Vite |
 | Visualization | 3D force-graph |
-| Automated tests | Node.js test runner |
+| Automated testing | Node.js test runner |
 
 ## Getting Started
 
 ### Prerequisites
 
-Install the following before running the project:
+Install:
 
-- Node.js with npm.
+- Node.js and npm.
 - Git.
-- An MCP-compatible client if you want to use the MCP integration.
+- An MCP-compatible client if you want to use the AI integration.
 
 ### 1. Clone the repository
 
@@ -168,25 +177,21 @@ The root build script compiles the TypeScript application and builds the fronten
 npm start
 ```
 
-The application starts the MCP server and its Express-based visualization API. The dashboard is configured to run on port `3000`.
+The application starts the MCP server and its Express-based visualization API. The dashboard is configured to use port `3000`.
 
-Open the following address in your browser:
+Open:
 
 ```text
 http://localhost:3000
 ```
 
-Keep the process running while using the dashboard or connecting an MCP client.
+Keep the application process running while using the dashboard or connecting an MCP client.
 
-If port `3000` is already occupied, investigate the existing process and the application's port configuration before starting another instance.
-
-## Connecting to Claude Desktop
-
-Blast Radius can be configured as a local MCP server for a compatible Claude Desktop installation.
+### 5. Configure Claude Desktop
 
 Add a server entry to your Claude Desktop configuration file, adjusting the path to match your local installation.
 
-Example:
+Example for Windows:
 
 ```json
 {
@@ -201,23 +206,23 @@ Example:
 }
 ```
 
-Replace the example path if you cloned the project into a different directory.
+Replace the example path if your project is installed elsewhere.
 
-After saving the configuration, restart Claude Desktop and check whether the server connects successfully.
+After saving the configuration, restart Claude Desktop and verify that the server connects successfully.
 
-Refer to the [official MCP documentation](https://modelcontextprotocol.io/) for information about MCP clients and server configuration.
+For further details, see the [official MCP documentation](https://modelcontextprotocol.io/).
 
 ## Example Questions
 
-Once the server is connected and the relevant tools are available, try prompts such as:
+Once the server is connected and the relevant tools are available, try asking:
 
 - "Analyze the dependency blast radius of TypeScript in this project."
-- "Evaluate the potential impact of upgrading Express to a newer version."
+- "Evaluate the potential impact of upgrading Express."
 - "Investigate known vulnerabilities in the installed dependencies."
 - "Help me understand which dependencies are connected to a vulnerable package."
 - "Open the dependency visualization."
 
-The answers depend on the project being analyzed, the available dependency data, and the capabilities exposed by the running server.
+Results depend on the project being analyzed and the capabilities exposed by the running server.
 
 ## Testing and Validation
 
@@ -245,70 +250,24 @@ Run TypeScript type checking:
 npx tsc --noEmit
 ```
 
-Check root dependencies for known advisories:
+Audit root dependencies:
 
 ```bash
 npm audit
 ```
 
-Check frontend dependencies separately:
+Audit frontend dependencies separately:
 
 ```bash
 cd ui
 npm audit
 ```
 
-A successful build, passing tests, and a clean dependency audit are useful validation signals, but they do not establish that every security-analysis result is correct or that the application is free from vulnerabilities.
+Passing tests, successful builds, and clean dependency audits are useful validation signals, but they do not prove that every security-analysis result is correct or that the application is free from vulnerabilities.
 
 ## Current Scope and Limitations
 
-Blast Radius is an evolving open-source project.
+Blast Radius MCP is an evolving open-source project.
 
 - **Dependency parsing:** The current documented workflow focuses on npm lockfiles.
-- **Upgrade analysis:** Declared version compatibility does not guarantee runtime compatibility.
-- **Vulnerability coverage:** Results depend on OSV data and successful query processing.
-- **Severity:** Advisory severity may be unavailable or require interpretation.
-- **Security conclusions:** Graph reachability and vulnerability findings should be reviewed in the context of the actual application.
-- **Ecosystem support:** Python, Rust, and Go support should be considered future work until their complete parsing and analysis workflows are implemented and tested.
-- **Testing:** The current automated suite focuses on dependency upgrade analysis. Additional scanner, API, and end-to-end tests would improve confidence.
-
-Blast Radius is a decision-support tool. It should complement—not replace—security reviews, dependency maintenance, application testing, and other software supply-chain security controls.
-
-## Roadmap
-
-Potential areas for future development include:
-
-- Dedicated vulnerability-scanner tests.
-- More comprehensive API and end-to-end tests.
-- Improved dependency-depth and attack-path visualization.
-- Better handling of large dependency graphs.
-- Additional lockfile parsers and ecosystem support.
-- Improved visualization performance and frontend code splitting.
-- Continuous integration for builds, tests, and dependency audits.
-- Clearer contribution workflows and release documentation.
-
-Roadmap items are proposals, not claims that the functionality is already implemented.
-
-## Contributing
-
-Contributions, bug reports, testing, and documentation improvements are welcome.
-
-To contribute:
-
-1. Fork the repository.
-2. Create a branch for your change.
-3. Make the change and add relevant tests.
-4. Run the automated tests and build checks.
-5. Submit a pull request explaining the change and its validation.
-
-For security-sensitive findings, avoid publishing exploitable details before coordinating an appropriate disclosure.
-
-## License
-
-Blast Radius MCP is distributed under the MIT License. See [`LICENSE`](LICENSE) for the license text.
-
-## Project
-
-**Repository:** [kystron/blast-radius-mcp](https://github.com/kystron/blast-radius-mcp)
-
-Built to help developers and AI assistants understand the impact of dependency changes and make more informed software supply-chain security decisions.
+- **Upgrade analysis:** Declared version compatibility does not guarantee runtime
