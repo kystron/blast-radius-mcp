@@ -4,6 +4,8 @@
 
 Blast Radius MCP is an open-source dependency analysis and security visualization tool built with TypeScript and the Model Context Protocol (MCP). It helps developers and AI assistants analyze dependency relationships, evaluate package upgrade compatibility, investigate known vulnerabilities, and explore dependency graphs through a 3D dashboard.
 
+Blast Radius MCP is designed to help developers and AI assistants investigate dependency relationships, upgrade impact, and known security vulnerabilities in one workflow.
+
 Instead of treating dependencies as a flat list, Blast Radius models them as a graph to help developers understand the potential impact of changes and security issues.
 
 ## Author & Attribution
