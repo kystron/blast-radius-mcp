@@ -100,6 +100,9 @@ export function parseNpmLock(lockfilePath: string): PackageRecord[] {
             peerDependencies:
                 pkg.peerDependencies || {},
 
+            peerDependenciesMeta:
+                pkg.peerDependenciesMeta || {},
+
             optionalDependencies:
                 pkg.optionalDependencies || {},
 

@@ -107,10 +107,12 @@ function addDependencyEdges(
 
 
         if (!resolved) {
-
-            console.warn(
-                `[WARN] Could not resolve ${packageName} from ${record.path}`
-            );
+            const isOptionalPeer = isPeer && record.peerDependenciesMeta?.[packageName]?.optional === true;
+            if (!isOptionalPeer) {
+                console.warn(
+                    `[WARN] Could not resolve ${packageName} from ${record.path}`
+                );
+            }
 
             continue;
 

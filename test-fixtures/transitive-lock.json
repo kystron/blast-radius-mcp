@@ -1,0 +1,31 @@
+{
+  "name": "transitive-test-app",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "packages": {
+    "": {
+      "name": "transitive-test-app",
+      "version": "1.0.0",
+      "dependencies": {
+        "target-lib": "^3.0.0",
+        "middle-lib": "1.0.0",
+        "top-lib": "1.0.0"
+      }
+    },
+    "node_modules/target-lib": {
+      "version": "3.2.0"
+    },
+    "node_modules/middle-lib": {
+      "version": "1.0.0",
+      "dependencies": {
+        "target-lib": "^3.0.0"
+      }
+    },
+    "node_modules/top-lib": {
+      "version": "1.0.0",
+      "dependencies": {
+        "middle-lib": "^1.0.0"
+      }
+    }
+  }
+}

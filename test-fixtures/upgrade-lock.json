@@ -1,0 +1,31 @@
+{
+  "name": "upgrade-test-app",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "packages": {
+    "": {
+      "name": "upgrade-test-app",
+      "version": "1.0.0",
+      "dependencies": {
+        "target-lib": "^3.0.0",
+        "compatible-lib": "^1.0.0",
+        "peer-consumer": "1.0.0"
+      }
+    },
+    "node_modules/target-lib": {
+      "version": "3.2.0"
+    },
+    "node_modules/compatible-lib": {
+      "version": "1.2.0",
+      "dependencies": {
+        "target-lib": "^3.0.0"
+      }
+    },
+    "node_modules/peer-consumer": {
+      "version": "1.0.0",
+      "peerDependencies": {
+        "target-lib": "^3.0.0 || ^4.0.0"
+      }
+    }
+  }
+}

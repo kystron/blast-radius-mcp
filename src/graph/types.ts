@@ -13,6 +13,7 @@ export interface PackageRecord {
     devDependencies: Record<string,string>;
 
     peerDependencies: Record<string,string>;
+    peerDependenciesMeta?: Record<string, { optional?: boolean }>;
 
     optionalDependencies: Record<string,string>;
 
